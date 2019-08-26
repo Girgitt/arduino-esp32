@@ -19,9 +19,11 @@
  */
 
 #include "ETH.h"
-#include "eth_phy/phy.h"
-#include "eth_phy/phy_tlk110.h"
-#include "eth_phy/phy_lan8720.h"
+#include "esp_eth.h"
+#include "esp_eth_mac.h"
+#include "esp_eth_phy.h"
+// #include "eth_phy/phy_tlk110.h"
+// #include "eth_phy/phy_lan8720.h"
 #include "lwip/err.h"
 #include "lwip/dns.h"
 

@@ -13,10 +13,11 @@
 // limitations under the License.
 #include "sd_diskio.h"
 extern "C" {
+    #include "ff.h"
     #include "diskio.h"
     #include "ffconf.h"
-    #include "ff.h"
     //#include "esp_vfs.h"
+    #include "diskio_impl.h"
     #include "esp_vfs_fat.h"
     char CRC7(const char* data, int length);
     unsigned short CRC16(const char* data, int length);

@@ -488,8 +488,8 @@ IPAddress WiFiSTAClass::dnsIP(uint8_t dns_no)
     if(WiFiGenericClass::getMode() == WIFI_MODE_NULL){
         return IPAddress();
     }
-    ip_addr_t dns_ip = dns_getserver(dns_no);
-    return IPAddress(dns_ip.u_addr.ip4.addr);
+    const ip_addr_t* dns_ip = dns_getserver(dns_no);
+    return IPAddress(dns_ip->u_addr.ip4.addr);
 }
 
 /**
@@ -687,7 +687,9 @@ bool WiFiSTAClass::beginSmartConfig() {
     esp_wifi_disconnect();
 
     esp_err_t err;
-    err = esp_smartconfig_start(reinterpret_cast<sc_callback_t>(&WiFiSTAClass::_smartConfigCallback), 1);
+    smartconfig_start_config_t config;
+    config.enable_log = false;
+    err = esp_smartconfig_start(&config);
     if (err == ESP_OK) {
         _smartConfigStarted = true;
         _smartConfigDone = false;
@@ -734,27 +736,27 @@ const char * sc_type_strings[] = {
 #endif
 
 void WiFiSTAClass::_smartConfigCallback(uint32_t st, void* result) {
-    smartconfig_status_t status = (smartconfig_status_t) st;
-    log_d("Status: %s", sc_status_strings[st % 5]);
-    if (status == SC_STATUS_GETTING_SSID_PSWD) {
-#if ARDUHAL_LOG_LEVEL >= ARDUHAL_LOG_LEVEL_DEBUG
-        smartconfig_type_t * type = (smartconfig_type_t *)result;
-        log_d("Type: %s", sc_type_strings[*type % 3]);
-#endif
-    } else if (status == SC_STATUS_LINK) {
-        wifi_sta_config_t *sta_conf = reinterpret_cast<wifi_sta_config_t *>(result);
-        log_d("SSID: %s", (char *)(sta_conf->ssid));
-        sta_conf->bssid_set = 0;
-        esp_wifi_set_config(WIFI_IF_STA, (wifi_config_t *)sta_conf);
-        esp_wifi_connect();
-        _smartConfigDone = true;
-    } else if (status == SC_STATUS_LINK_OVER) {
-        if(result){
-#if ARDUHAL_LOG_LEVEL >= ARDUHAL_LOG_LEVEL_DEBUG
-            ip4_addr_t * ip = (ip4_addr_t *)result;
-            log_d("Sender IP: " IPSTR, IP2STR(ip));
-#endif
-        }
-        WiFi.stopSmartConfig();
-    }
+   // smartconfig_status_t status = (smartconfig_status_t) st;
+//     log_d("Status: %s", sc_status_strings[st % 5]);
+//     if (status == SC_STATUS_GETTING_SSID_PSWD) {
+// #if ARDUHAL_LOG_LEVEL >= ARDUHAL_LOG_LEVEL_DEBUG
+//         smartconfig_type_t * type = (smartconfig_type_t *)result;
+//         log_d("Type: %s", sc_type_strings[*type % 3]);
+// #endif
+//     } else if (status == SC_STATUS_LINK) {
+//         wifi_sta_config_t *sta_conf = reinterpret_cast<wifi_sta_config_t *>(result);
+//         log_d("SSID: %s", (char *)(sta_conf->ssid));
+//         sta_conf->bssid_set = 0;
+//         esp_wifi_set_config(WIFI_IF_STA, (wifi_config_t *)sta_conf);
+//         esp_wifi_connect();
+//         _smartConfigDone = true;
+//     } else if (status == SC_STATUS_LINK_OVER) {
+//         if(result){
+// #if ARDUHAL_LOG_LEVEL >= ARDUHAL_LOG_LEVEL_DEBUG
+//             ip4_addr_t * ip = (ip4_addr_t *)result;
+//             log_d("Sender IP: " IPSTR, IP2STR(ip));
+// #endif
+//         }
+//         WiFi.stopSmartConfig();
+  //  }
 }
