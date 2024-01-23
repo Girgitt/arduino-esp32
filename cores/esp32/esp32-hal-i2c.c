@@ -949,6 +949,14 @@ static void IRAM_ATTR i2c_isr_handler_default(void* arg)
             activeInt&=~I2C_TXFIFO_EMPTY_INT_ST;
         }
 
+        if(activeInt & I2C_RXFIFO_OVF_INT_ST) {
+            emptyRxFifo(p_i2c);
+            p_i2c->dev->int_clr.rx_fifo_full=1;
+            p_i2c->dev->int_ena.rx_fifo_full=1; //why?
+
+            activeInt &=~I2C_RXFIFO_OVF_INT_ST;
+        }
+
         if(activeInt & I2C_RXFIFO_FULL_INT_ST) {
             emptyRxFifo(p_i2c);
             p_i2c->dev->int_clr.rx_fifo_full=1;
